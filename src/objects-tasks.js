@@ -164,14 +164,22 @@ function makeWord(lettersObject) {
  * Return true if the seller can sell tickets, false otherwise
  *
  * @param {number[]} queue - The array representing the bills each customer pays with
- * @return {boolean} - True if the seller can sell tickets to everyone, false otherwise
+ * @return {boolean} - True if the esller can sell tickets to everyone, false otherwise
  *
  * @example
  *    sellTickets([25, 25, 50]) => true
  *    sellTickets([25, 100]) => false (The seller does not have enough money to give change.)
  */
-function sellTickets(/* queue */) {
-  throw new Error('Not implemented');
+function sellTickets(queue) {
+  const price = 25;
+  let income = 0;
+  let bill;
+  while (queue.length) {
+    bill = queue.shift();
+    if ((income + price) / bill < 1) return false;
+    income += price;
+  }
+  return true;
 }
 
 /**
