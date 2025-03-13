@@ -364,33 +364,134 @@ function group(array, keySelector, valueSelector) {
  *  For more examples see unit tests.
  */
 
+class Selector {
+  static myOrder = {
+    element: 1,
+    id: 2,
+    class: 3,
+    attr: 4,
+    pseudoClass: 5,
+    pseudoElement: 6,
+  };
+
+  constructor() {
+    this.selectors = [];
+    this.order = [];
+  }
+
+  checkUnique(value) {
+    if (this.order.includes(value)) {
+      throw new Error(
+        'Element, id and pseudo-element should not occur more then one time inside the selector'
+      );
+    }
+  }
+
+  checkOrder(value) {
+    if (this.order.length) {
+      const lastSelector = this.order[this.order.length - 1];
+      if (Selector.myOrder[lastSelector] > Selector.myOrder[value]) {
+        throw new Error(
+          'Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element'
+        );
+      }
+    }
+  }
+
+  element(value) {
+    const currentSelector = 'element';
+    this.checkUnique(currentSelector);
+    this.checkOrder(currentSelector);
+    this.order.push(currentSelector);
+    this.selectors.push(`${value}`);
+    return this;
+  }
+
+  id(value) {
+    const currentSelector = 'id';
+    this.checkUnique(currentSelector);
+    this.checkOrder(currentSelector);
+    this.order.push(currentSelector);
+    this.selectors.push(`#${value}`);
+    return this;
+  }
+
+  class(value) {
+    const currentSelector = 'class';
+    this.checkOrder(currentSelector);
+    this.order.push(currentSelector);
+    this.selectors.push(`.${value}`);
+    return this;
+  }
+
+  attr(value) {
+    const currentSelector = 'attr';
+    this.checkOrder(currentSelector);
+    this.order.push(currentSelector);
+    this.selectors.push(`[${value}]`);
+    return this;
+  }
+
+  pseudoClass(value) {
+    const currentSelector = 'pseudoClass';
+    this.checkOrder(currentSelector);
+    this.order.push(currentSelector);
+    this.selectors.push(`:${value}`);
+    return this;
+  }
+
+  pseudoElement(value) {
+    const currentSelector = 'pseudoElement';
+    this.checkUnique(currentSelector);
+    this.checkOrder(currentSelector);
+    this.order.push(currentSelector);
+    this.selectors.push(`::${value}`);
+    return this;
+  }
+
+  combine(selector1, combinator, selector2) {
+    const combined = `${selector1.stringify()} ${combinator} ${selector2.stringify()}`;
+    return this.element(combined);
+  }
+
+  stringify() {
+    return this.selectors.join('');
+  }
+}
 const cssSelectorBuilder = {
-  element(/* value */) {
-    throw new Error('Not implemented');
+  element(value) {
+    const obj = new Selector();
+    return obj.element(value);
   },
 
-  id(/* value */) {
-    throw new Error('Not implemented');
+  id(value) {
+    const obj = new Selector();
+    return obj.id(value);
   },
 
-  class(/* value */) {
-    throw new Error('Not implemented');
+  class(value) {
+    const obj = new Selector();
+    return obj.class(value);
   },
 
-  attr(/* value */) {
-    throw new Error('Not implemented');
+  attr(value) {
+    const obj = new Selector();
+    return obj.attr(value);
   },
 
-  pseudoClass(/* value */) {
-    throw new Error('Not implemented');
+  pseudoClass(value) {
+    const obj = new Selector();
+    return obj.pseudoClass(value);
   },
 
-  pseudoElement(/* value */) {
-    throw new Error('Not implemented');
+  pseudoElement(value) {
+    const obj = new Selector();
+    return obj.pseudoElement(value);
   },
 
-  combine(/* selector1, combinator, selector2 */) {
-    throw new Error('Not implemented');
+  combine(selector1, combinator, selector2) {
+    const obj = new Selector();
+    return obj.combine(selector1, combinator, selector2);
   },
 };
 
